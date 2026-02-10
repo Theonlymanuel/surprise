@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Valentine</title>
+
+<style>
+/* Red romantic background */
+.redProposal{
+  background: linear-gradient(135deg, #b3001b, #e60039, #ff4d6d);
+  background-size: 300% 300%;
+  animation: gradientMove 8s ease infinite;
+}
+
+@keyframes gradientMove{
+  0%{background-position: 0% 50%;}
+  50%{background-position: 100% 50%;}
+  100%{background-position: 0% 50%;}
+}
+
+/* Card */
+.proposalSimple{
+  width: min(560px, 94vw);
+  margin: 0 auto;
+  margin-top: clamp(40px, 8vh, 80px);
+  padding: 30px 20px 30px;
+  border-radius: 30px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.25);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+  backdrop-filter: blur(10px);
+  text-align:center;
+}
+
+/* Badge */
+.badge{
+  display:inline-block;
+  padding: 8px 18px;
+  border-radius: 50px;
+  background: rgba(255,255,255,0.2);
+  color:#fff;
+  font-weight: 800;
+  margin-bottom: 15px;
+  letter-spacing: 1px;
+}
+
+/* Title */
+.proposalTitle{
+  color:#fff;
+  font-size: clamp(24px, 5vw, 38px);
+  margin: 10px 0;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+/* Subtext */
+.proposalSub{
+  color:#fff;
+  font-size: 16px;
+  opacity:0.95;
+  margin-bottom: 25px;
+}
+
+/* Buttons */
+.btnYes, .btnNo{
+  min-width: 130px;
+  padding: 14px 28px;
+  border-radius: 50px;
+  border:none;
+  font-size:16px;
+  font-weight:900;
+  cursor:pointer;
+  margin:10px;
+  transition: all 0.2s ease;
+}
+
+/* YES button - pink glow */
+.btnYes{
+  background: linear-gradient(135deg,#ff8fab,#ff4d6d);
+  color:white;
+  box-shadow: 0 10px 25px rgba(255,77,109,0.6);
+}
+
+.btnYes:hover{
+  transform: scale(1.05);
+}
+
+/* NO button - soft white */
+.btnNo{
+  background: white;
+  color:#e60039;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+    
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: 'Comic Sans MS', cursive, system-ui;
+    overflow:hidden;
+    background:#ffe6ef;
+    color:#fff; /* NB: all writes to white */
+  }
+
+  .screen{
+    display:none;
+    position:absolute;
+    inset:0;
+    padding:18px;
+    text-align:center;
+  }
+  .active{display:block}
+
+  /* Background themes */
+  .pink-bg{
+    background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.2), transparent 35%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.18), transparent 40%),
+                linear-gradient(135deg, #ffb3c7, #ffd1dc);
+  }
+  .red-bg{
+    background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.15), transparent 35%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.12), transparent 40%),
+                linear-gradient(135deg, #c9182c, #ff4d6d);
+  }
+
+  h1{
+    margin:14px 0 12px;
+    letter-spacing:1px;
+    color:#fff; /* white */
+    text-transform:uppercase;
+    font-size: clamp(22px, 4vw, 34px);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.25);
+  }
+
+  /* notes/cards */
+  .note{
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 14px;
+    padding: 12px 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+    color:#fff; /* white */
+    backdrop-filter: blur(4px);
+    gap: 25px;
+  }
+
+  button{
+    padding:12px 25px;
+    border-radius:30px;
+    border:2px dotted rgba(255,255,255,0.75);
+    background: rgba(255,255,255,0.18);
+    color:#fff; /* white */
+    font-weight:bold;
+    cursor:pointer;
+    margin:10px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.18);
+  }
+
+  /* floating hearts */
+  .heart{
+    position:absolute;
+    animation: float 6s linear infinite;
+    opacity:0.9;
+    pointer-events:none;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+  }
+  @keyframes float{
+    0%{transform:translateY(110vh) scale(1);opacity:1;}
+    100%{transform:translateY(-15vh) scale(1.1);opacity:0;}
+  }
+
+  /* Proposal layout */
+  .proposalWrap{
+    height: calc(100% - 90px);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+  }
+  .character{
+    width:min(360px, 92vw);
+    height: min(220px, 34vh);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin: 0 auto;
+  }
+  .character .sign{
+    padding:14px 16px;
+    border-radius:18px;
+    border: 2px solid rgba(255,255,255,0.55);
+    background: rgba(0,0,0,0.10);
+    color:#fff;
+    font-weight:700;
+    font-size: clamp(18px, 3.5vw, 26px);
+    box-shadow:0 12px 28px rgba(0,0,0,0.18);
+  }
+  .yesNoRow{
+    display:flex;
+    gap:18px;
+    justify-content:center;
+    align-items:center;
+  }
+  #noBtn{
+    position:relative;
+  }
+
+  /* OMG screen icons */
+  .iconGrid{
+    display:flex;
+    justify-content:center;
+    gap:18px;
+    margin-top: 38px;
+    flex-wrap:wrap;
+  }
+  .iconBtn{
+    width:110px;
+    height:110px;
+    border-radius:22px;
+    background: rgba(255,255,255,0.18);
+    border:1px solid rgba(255,255,255,0.3);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:42px;
+    cursor:pointer;
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    transition: transform .12s ease;
+    user-select:none;
+  }
+  .iconBtn:active{transform:scale(0.96)}
+
+  /* Back button */
+  .topBar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+  }
+  .backBtn{
+    padding:10px 16px;
+    border-radius:18px;
+    font-size:14px;
+    border:1px solid rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.16);
+  }
+
+  /* Forever Together layout: photos left, message right */
+  
+  .twoCol{
+    margin-top: 12px;
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:16px;
+    align-items:start;
+  }
+  @media (min-width: 720px){
+    .twoCol{ grid-template-columns: 1fr 1fr; }
+  }
+  .photoStack{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    align-items:center;
+  }
+  .photoBox{
+    width:min(320px, 92vw);
+    height:210px;
+    border-radius:20px;
+    background: rgba(255,255,255,0.18);
+    border:1px dashed rgba(255,255,255,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-weight:700;
+    overflow:hidden;
+  }
+  .photoBox img{
+  width:200%;
+  height:150%;
+  max-width: 100%;
+  max-height: 50vh;
+  object-fit:contain;
+  object-position:center;
+  display:block;
+}
+
+
+
+  /* Letter */
+  .letter{
+    max-width: 520px;
+    margin: 0 auto;
+    text-align:left;
+    line-height:1.55;
+    font-size: clamp(14px, 2.8vw, 17px);
+  }
+
+  /* Flowers page layout */
+  .flowersGrid{
+    margin-top: 12px;
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:14px;
+    align-items:center;
+  }
+  @media (min-width: 720px){
+    .flowersGrid{ grid-template-columns: 1fr 1.2fr 1fr; }
+  }
+  .bouquetBox{
+    width:min(360px, 92vw);
+    height:260px;
+    margin: 0 auto;
+    border-radius:22px;
+    background: rgba(255,255,255,0.18);
+    border:1px dashed rgba(255,255,255,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+    overflow:hidden;
+  }
+  .bouquetBox img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+</style>
+</head>
+<body>
+
+<div class="screen pink-bg active" id="proposal">
+  <div class="proposalSimple">
+    <div class="miniHearts" aria-hidden="true"></div>
+
+    <div class="badge">💖 Valentine Proposal</div>
+
+    <h1 class="proposalTitle">Roselyn, will you be my valentine?</h1>
+    <p class="proposalSub">I made this just for you ✨</p>
+
+    <div class="yesNoRow">
+      <button class="btnYes" onclick="go('omg')">YES</button>
+      <button class="btnNo" id="noBtn">NO</button>
+    </div>
+
+    <div class="proposalFooter">Tap “YES” 😌</div>
+  </div>
+</div>
+
+
+<!-- 2) OMG page with 3 boxes -->
+<div class="screen red-bg" id="omg">
+  <div class="topBar">
+    <button class="backBtn" onclick="go('proposal')">⬅ Back</button>
+    <div></div>
+  </div>
+
+  <h1>OMG, you said yes!</h1>
+
+  <div class="iconGrid">
+    <div class="iconBtn" onclick="go('forever')" title="Camera">📸</div>
+    <div class="iconBtn" onclick="go('letter')" title="Envelope">💌</div>
+    <div class="iconBtn" onclick="go('flowers')" title="Present">🎁</div>
+  </div>
+</div>
+
+<!-- 2. Camera -> Forever Together -->
+<div class="screen pink-bg" id="forever">
+  <div class="topBar">
+    <button class="backBtn" onclick="go('omg')">⬅ Back</button>
+    <div></div>
+  </div>
+
+  <h1>FOREVER TOGETHER</h1>
+
+  <div class="twoCol">
+    <!-- Photos LEFT -->
+    <div class="photoStack">
+      <!-- REPLACE src with your photo -->
+      <div class="photoBox">
+        <img src="IMG_7470.JPG" alt="Photo 1 (replace)" onerror="this.remove(); this.parentElement.textContent='Photo 1 (replace file name)';">
+      </div>
+      <div class="photoBox">
+        <img src="IMG_7320.JPG" alt="Photo 2 (replace)" onerror="this.remove(); this.parentElement.textContent='Photo 2 (replace file name)';">
+      </div>
+    </div>
+
+    <!-- Message RIGHT -->
+    <div class="note" style="max-width:520px;margin:0 auto; gap: 25px; margin-top: 20px; display: flex; justify-content: center; align-items: center;">
+      We've shared so many special memories together, and I can't wait to create more!
+    </div>
+  </div>
+</div>
+
+<!-- 3. Envelope -> Words From My Heart -->
+<div class="screen pink-bg" id="letter">
+  <div class="topBar">
+    <button class="backBtn" onclick="go('omg')">⬅ Back</button>
+    <div></div>
+  </div>
+
+  <h1>WORDS FROM MY HEART</h1>
+
+  <div class="note letter">
+    My love,<br><br>
+    I just wanted to remind you how much you mean to me. Every day with you feels warmer, brighter, and a little more magical.<br><br>
+    Thank you for the laughs, the late nights, and the quiet moments in between. No matter where life takes us, you are my favourite place to return to.<br><br>
+    I'm so grateful for you. Always.<br><br>
+    I love you so much, My dear Roselyn.
+  </div>
+</div>
+
+<!-- 4. Present -> Flowers For My Love -->
+<div class="screen red-bg" id="flowers">
+  <div class="topBar">
+    <button class="backBtn" onclick="go('omg')">⬅ Back</button>
+    <div></div>
+  </div>
+
+  <h1> MY LOVE</h1>
+
+  <div class="flowersGrid">
+    <div>
+      <div class="note">With you everything fells easy, but sometimes hmmmm</div>
+      <div style="height:10px"></div>
+      <div class="note">Everyday with you feeels likea gift, I love you bunches</div>
+    </div>
+
+    <div class="bouquetBox">
+      <!-- INSERT YOUR BOUQUET IMAGE HERE -->
+      <img src="middle put.jpeg" alt="Bouquet (replace)" onerror="this.remove(); this.parentElement.textContent='Insert Bouquet Image (replace file name)';">
+    </div>
+
+    <div>
+      <div class="note">Loving you is my favourite thing</div>
+      <div style="height:10px"></div>
+      <div class="note">If I had to choose again, I'd choose you</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function go(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  // NO button moves away
+  const noBtn = document.getElementById("noBtn");
+  noBtn.addEventListener("mouseover", moveNo);
+  noBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); moveNo(); }, {passive:false});
+
+  function moveNo(){
+    noBtn.style.position = "absolute";
+    noBtn.style.left = Math.random() * 75 + "vw";
+    noBtn.style.top  = Math.random() * 75 + "vh";
+  }
+
+  // Floating hearts
+  const hearts = ["❤️","💖","💕","💘","✨"];
+  setInterval(()=>{
+    const h=document.createElement("div");
+    h.className="heart";
+    h.textContent=hearts[Math.floor(Math.random()*hearts.length)];
+    h.style.left = Math.random()*100 + "vw";
+    h.style.fontSize = (18 + Math.random()*22) + "px";
+    h.style.animationDuration = (4 + Math.random()*3) + "s";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(), 7000);
+  }, 260);
+</script>
+
+</body>
+</html>
